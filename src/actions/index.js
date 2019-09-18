@@ -4,31 +4,44 @@ import history from '../history';
 import { 
     REGISTER, SIGN_IN, SIGN_OUT, 
     FETCH_POSTS, FETCH_POST, CREATE_POST,
-    EDIT_POST, DELETE_POST
+    EDIT_POST, DELETE_POST, STATUS_FAILED, AUTHENTICATE
 } from './types';
 
 
-export const register = data => async dispatch => {
+export const authenticate = data => {
+    return {
+        type: AUTHENTICATE,
+        payload: data
+    };
+};
+
+export const registerAcion = (data, callback) => async dispatch => {
     const response = await blog.post('/register', data);
-    dispatch({ type: REGISTER, payload: response.data });
-    history.push('/');
+    const errors = checkForErrors(response);
+    if (errors) {
+        callback(errors);
+    } else {
+        localStorage.setItem('auth_user', JSON.stringify(response.data.response));
+        dispatch({ type: REGISTER, payload: response.data.response });
+        history.push('/');
+    }
 };
 
 export const signIn = data => async dispatch => {
     const response = await blog.post('/login', data);
+    localStorage.setItem('auth_user', JSON.stringify(response.data.response));
     dispatch({ type: SIGN_IN, payload: response.data });
-    history.push('/');
 }
 
 export const signOut = () => async dispatch => {
-    const response = await blog.post('/logout');
-    dispatch({ type: SIGN_OUT, payload: response.data });
+    await blog.post('/logout');
+    localStorage.removeItem('auth_user');
+    dispatch({ type: SIGN_OUT });
 } 
 
+
 export const fetchPosts = () => async dispatch => {
-    console.log('Fetch Posts reached');
     const response = await blog.get('/posts/get');
-    console.log('response:', response);
     dispatch({ type: FETCH_POSTS, payload: response.data.response.posts });
 };
 
@@ -40,7 +53,6 @@ export const fetchPost = id => async dispatch => {
 export const createPost = data => async dispatch => {
     const response = await blog.post('/post/add', data);
     dispatch({ type: CREATE_POST, payload: response.data });
-    history.push('/');
 }
 
 export const editPost = (id, data) => async dispatch => {
@@ -51,5 +63,21 @@ export const editPost = (id, data) => async dispatch => {
 export const deletePost = id => async dispatch => {
     const response = await blog.delete(`/post/delete/${id}`);
     dispatch({ type: DELETE_POST, payload: response.data });
+}
+
+const checkForErrors = response => {
+    const { status } = response.data;
+
+    if (!status) {
+        const { message } = response.data;
+        return message ? message : 'Request Could not be made. Please try again later';
+    }
+
+    if (status == STATUS_FAILED) {
+        const { message } = response.data.response;
+        return message ? message : 'Request Could not be made. Please try again later'
+    }
+
+    return;
 }
 
