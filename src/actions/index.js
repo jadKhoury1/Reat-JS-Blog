@@ -27,10 +27,16 @@ export const registerAcion = (data, callback) => async dispatch => {
     }
 };
 
-export const signIn = data => async dispatch => {
+export const signIn = (data, callback) => async dispatch => {
     const response = await blog.post('/login', data);
-    localStorage.setItem('auth_user', JSON.stringify(response.data.response));
-    dispatch({ type: SIGN_IN, payload: response.data });
+    const errors = checkForErrors(response);
+    if (errors) {
+        callback(errors);
+    } else {
+        localStorage.setItem('auth_user', JSON.stringify(response.data.response));
+        dispatch({ type: SIGN_IN, payload: response.data });
+        history.push('/');
+    }
 }
 
 export const signOut = () => async dispatch => {
@@ -73,7 +79,7 @@ const checkForErrors = response => {
         return message ? message : 'Request Could not be made. Please try again later';
     }
 
-    if (status == STATUS_FAILED) {
+    if (status === STATUS_FAILED) {
         const { message } = response.data.response;
         return message ? message : 'Request Could not be made. Please try again later'
     }

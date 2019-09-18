@@ -52,7 +52,7 @@ class Register extends Component {
             errors.name = 'Name cannot exceed 40 characters';
         }
         
-        let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        let re = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/;
 
         if (!re.test(this.state.email)) {
             errors.email = 'Email is invalid';
@@ -68,7 +68,7 @@ class Register extends Component {
             errors.passwordConfirmation = 'Password does not match';
         }
 
-        for (let input in this.state) {
+        for (var input in this.state) {
             if (!this.state[input]) {
                 errors[input] = `${input} field is required`;
             }
@@ -77,14 +77,15 @@ class Register extends Component {
         return errors;
     }
 
-    renderHeader = () => {
+    renderForm = () => {
         if (this.props.isSignedIn) {
             return <Redirect to="/" />
         }
         
         const { errors } = this.state;
         return (
-            <form className="ui form error" onSubmit={this.handleSubmit.bind(this)}>
+            <form className="ui form error" onSubmit={this.handleSubmit}>
+               {errors.api ? <div className="ui error message"> {errors.api} </div> : null }
                 <div className="field">
                     <label>Name</label>
                     <input 
@@ -131,7 +132,6 @@ class Register extends Component {
                     />
                     {errors.passwordConfirmation ? <div className="ui error message"> {errors.passwordConfirmation} </div> : null }
                 </div>
-                {errors.api ? <div className="ui error message"> {errors.api} </div> : null }
                 <button className="ui primary button" type="submit">Register</button>
                 <Link to='/' className="ui button">Back</Link>
             </form>
@@ -141,7 +141,7 @@ class Register extends Component {
     render() {
         return(
             <div>
-                {this.renderHeader()}
+                {this.renderForm()}
             </div>
         );
     };
