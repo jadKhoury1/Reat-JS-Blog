@@ -2,7 +2,7 @@ import blog from '../apis/blog';
 import history from '../history';
 
 import { 
-    REGSITER, SIGN_IN, SIGN_OUT, 
+    REGISTER, SIGN_IN, SIGN_OUT, 
     FETCH_POSTS, FETCH_POST, CREATE_POST,
     EDIT_POST, DELETE_POST
 } from './types';
@@ -10,7 +10,7 @@ import {
 
 export const register = data => async dispatch => {
     const response = await blog.post('/register', data);
-    dispatch({ type: REGSITER, payload: response.data });
+    dispatch({ type: REGISTER, payload: response.data });
     history.push('/');
 };
 
@@ -26,8 +26,10 @@ export const signOut = () => async dispatch => {
 } 
 
 export const fetchPosts = () => async dispatch => {
+    console.log('Fetch Posts reached');
     const response = await blog.get('/posts/get');
-    dispatch({ type: FETCH_POSTS, payload: response.data });
+    console.log('response:', response);
+    dispatch({ type: FETCH_POSTS, payload: response.data.response.posts });
 };
 
 export const fetchPost = id => async dispatch => {
@@ -35,18 +37,18 @@ export const fetchPost = id => async dispatch => {
     dispatch({ type: FETCH_POST, payload: response.data });
 }
 
-export default createPost = data => async dispatch => {
+export const createPost = data => async dispatch => {
     const response = await blog.post('/post/add', data);
     dispatch({ type: CREATE_POST, payload: response.data });
     history.push('/');
 }
 
-export default editPost = (id, data) => async dispatch => {
+export const editPost = (id, data) => async dispatch => {
     const response = await blog.put(`/post/edit/${id}`, data);
     dispatch({ type: EDIT_POST, payload: response.data });
 }
 
-export default deletePost = id => async dispatch => {
+export const deletePost = id => async dispatch => {
     const response = await blog.delete(`/post/delete/${id}`);
     dispatch({ type: DELETE_POST, payload: response.data });
 }
