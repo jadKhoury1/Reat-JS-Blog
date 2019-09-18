@@ -1,7 +1,25 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { createPost} from '../../actions';
+import PostForm from './PostForm';
 
-const PostCreate = () => {
-    return <div>Post Create</div>
-};
+class PostCreate extends Component {
+    onSubmit = (formValues, callback) => {
+        this.props.createPost(formValues, callback);
+    }
 
-export default PostCreate;
+    render() {
+        return (
+            <div className="ui container">
+                <h3 className="header">Add New Post</h3>
+                <PostForm 
+                    button="Add"
+                    handleSubmit={this.onSubmit}
+                    initialValues={{title:'', description: '', image: '', errors: {}}}
+                />
+            </div>
+        );
+    }
+}
+
+export default connect(null, { createPost })(PostCreate);

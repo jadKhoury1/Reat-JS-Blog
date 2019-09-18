@@ -8,6 +8,14 @@ class PostList extends Component {
         this.props.fetchPosts();
     }
 
+    UNSAFE_componentWillReceiveProps({ history: {location: {state}} }) {
+        if (state && state.refresh) {
+            state.refresh = false;
+            this.props.fetchPosts();
+        }
+
+   }
+
     render() {
         return this.props.posts.map(post => {
             return (

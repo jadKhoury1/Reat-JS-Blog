@@ -7,7 +7,12 @@ class Header extends Component {
 
     renderButtons = () => {
         if (this.props.isSignedIn) {
-            return <Link to='#' className="item" onClick={() => this.props.signOut() }>Logout</Link>
+            return (
+                <React.Fragment>
+                    <Link to="/post/new" className="item">Add Post</Link>
+                    <Link to="#" className="item" onClick={() => this.props.signOut() }>Logout</Link>
+                </React.Fragment>
+            )
         }
         
         return(
@@ -22,6 +27,7 @@ class Header extends Component {
     render() {
         return (
             <div className="ui secondary pointing menu">
+                <Link to="/" className="item">Home</Link>
                 <div className="right menu">
                     {this.renderButtons()}
                 </div>

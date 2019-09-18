@@ -7,7 +7,7 @@ import {
 export default (state = {}, { type, payload }) => {
     switch (type) {
         case FETCH_POSTS:
-            return { ...state, ..._.mapKeys(payload, 'id')};
+            return {..._.mapKeys(payload, 'id')};
         case FETCH_POST:
             return {...state, [payload.id]: payload };
         default: 
