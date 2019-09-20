@@ -103,22 +103,24 @@ export const delePost = (id, callback) => async dispatch => {
     }
 }
 
-export const rejectPostAction = (id, action, callback) => async dispatch => {
+export const rejectPostAction = (id, action, errorCallback, successCallback) => async dispatch => {
     const response = await blog().post('/action', {id, action_type: 'reject' });
     const errors = checkForErrors(response);
     if (errors) {
         if (errors === 'Unauthenticated') {
             history.push('/auth/login');
         } else {
-            callback(errors);
+            errorCallback(errors);
         }
     } else {
         if (action === ADD_ACTION) {
-            dispatch({ type: DELETE_POST, payload: id });
+            dispatch({ type: DELETE_POST, payload: response.data.response.item.id });
+            successCallback(response.data.response.message);
         } else if (action === DELETE_ACTION || action === EDIT_ACTION) {
             dispatch({ type: FETCH_POST, payload: response.data.response.item });
+            successCallback(response.data.response.message);
         } else {
-            callback('Ann Error has Occured please try again later');
+            errorCallback('Ann Error has Occured please try again later');
         }
     }
     

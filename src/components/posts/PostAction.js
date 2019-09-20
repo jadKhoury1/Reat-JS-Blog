@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { fetchPost, rejectPostAction, approvePostAction } from '../../actions/index';
 import {  EDIT_ACTION } from '../../actions/types';
+import { Link } from 'react-router-dom';
 
 
 
@@ -34,7 +35,7 @@ class PostAction extends Component {
     renderForm = () => {
         const { post } = this.props;
         return (
-            <div>
+            <div className="mg-t-20">
                 {
                     post.action === EDIT_ACTION ? 
                     <div>
@@ -58,7 +59,7 @@ class PostAction extends Component {
 
         return (
             <React.Fragment>
-                <h3>{post.action.transaction}</h3>
+                <h3 className="red-color">{post.action.transaction}</h3>
                 {this.renderActionUserInfo(post.action)}
             </React.Fragment>
             
@@ -73,9 +74,9 @@ class PostAction extends Component {
 
         return (
             <div>
-                <span><strong>User Id:</strong> {user.id}</span>
-                <span><strong>User Name: </strong>{user.name}</span>
-                <span><strong>User Email: </strong>{user.email}</span>
+                <p><span className="ui orange label">User Id:</span> <strong>{user.id} </strong></p>
+                <p><span className="ui yellow label">User Name: </span> <strong>{user.name}</strong></p>
+                <p><span className="ui olive label">User Email</span><strong>{user.email}</strong></p>
 
             </div>
         );
@@ -89,21 +90,21 @@ class PostAction extends Component {
         }
 
         return (
-            <div>
+           <React.Fragment>
                 <button 
                     className="ui primary button"
                     onClick={() => this.props.approvePostAction(
                         post.action.id,
                         post.action.action,
                         error => this.setState({ error }),
-                        success => this.setState({ success })
+                        success => this.setState({ success, error: '' })
                     )}
                 >
                     Approve
                 </button>
 
                 <button 
-                    className="ui red button"
+                    className="ui red button mg-l-15"
                     onClick={() => this.props.rejectPostAction(
                         post.action.id,
                         post.action.action,
@@ -113,7 +114,8 @@ class PostAction extends Component {
                 >
                     Reject
                 </button>
-            </div>
+            </React.Fragment>
+        
         )
 
     };
@@ -121,7 +123,11 @@ class PostAction extends Component {
 
     render() {
         if (!this.props.post && this.state.success) {
-            return <h3>{this.state.success}</h3>;
+            return(
+                <div className="ui success">
+                    <h3 className="ui success message">{this.state.success}</h3>
+                </div>
+            );
         }
 
         if (!this.props.post) {
@@ -129,16 +135,23 @@ class PostAction extends Component {
         }
 
         if (this.props.post.deleted_at) {
-            return <h3>Post Deleted</h3>
+            return (
+                <div className="ui error">
+                    <h3 className="ui error message">Post Deleted</h3>
+                </div>
+            );
         }
      
         return (
-            <div className="ui container">
-               {this.state.success ? <h3>{this.state.success}</h3> : ''}
-               {this.state.error ? <h3 className="red">{this.state.error}</h3> : ''}
+            <div className="ui container error success">
+               {this.state.success ? <h3 className="ui success message">{this.state.success}</h3> : ''}
+               {this.state.error ? <h3 className="ui error message">{this.state.error}</h3> : ''}
                {this.renderActionHeader()}
                {this.renderForm()}
-               {this.renderButtons()}
+               <div className="mg-t-20">
+                {this.renderButtons()}
+                <Link to='/' className="ui button mg-l-15">Back</Link>
+               </div>
             </div>
         );
     }

@@ -37,7 +37,7 @@ class PostList extends Component {
                 if (action) {
                     return (
                         <div>
-                            <p>{action.transaction}</p>
+                            <p className="ui green label">{action.transaction}</p>
                             <Link to={`/post/${post.id}/action`} className="ui primary button">View More</Link>
                         </div>
                     );

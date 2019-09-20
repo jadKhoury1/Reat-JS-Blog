@@ -19,7 +19,7 @@ const reducer = (state, { type, payload }) => {
     case CHANGE_ERRORS:
         return {...state, errors: payload};
     case CHANGE_SUCCESS:
-        return {...state, success: payload}
+        return {...state, success: payload, errors: {}}
     default:
         return state;
   }
