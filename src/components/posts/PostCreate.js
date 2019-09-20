@@ -4,8 +4,8 @@ import { createPost} from '../../actions';
 import PostForm from './PostForm';
 
 class PostCreate extends Component {
-    onSubmit = (formValues, callback) => {
-        this.props.createPost(formValues, callback);
+    onSubmit = (formValues, errorCallback, successCallback) => {
+        this.props.createPost(formValues, errorCallback, successCallback);
     }
 
     render() {

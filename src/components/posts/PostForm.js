@@ -6,6 +6,7 @@ const CHANGE_TITLE = 'change_title';
 const CHANGE_DESCRIPTION = 'change_description';
 const CHANGE_IMAGE = 'change_image';
 const CHANGE_ERRORS = 'change_errors';
+const CHANGE_SUCCESS = 'change_success';
 
 const reducer = (state, { type, payload }) => {
   switch (type) {
@@ -17,6 +18,8 @@ const reducer = (state, { type, payload }) => {
         return {...state, image: payload};
     case CHANGE_ERRORS:
         return {...state, errors: payload};
+    case CHANGE_SUCCESS:
+        return {...state, success: payload}
     default:
         return state;
   }
@@ -32,7 +35,8 @@ const PostForm = ({ button, handleSubmit, initialValues}) => {
         title: initialValues.title,
         description: initialValues.description,
         image: initialValues.image,
-        errors: {}
+        errors: {},
+        success: ''
     });
 
 
@@ -65,39 +69,46 @@ const PostForm = ({ button, handleSubmit, initialValues}) => {
             }
             handleSubmit(
                 _.omit(state, dataToOmmit),
-                error => dispatch({type: CHANGE_ERRORS, payload: {api: error}})
+                error => dispatch({type: CHANGE_ERRORS, payload: {api: error}}),
+                success => {
+                    console.log('success was reached', success);
+                    dispatch({type: CHANGE_SUCCESS, payload: success});
+                }
             );
         }
     }
 
     return (
-        <form className="ui form error" onSubmit={onSubmit}>
-            {state.errors.api ? <div className="ui error message"> {state.errors.api} </div> : null }
-            <div className="field">
-                <label>Title</label>
-                <input 
-                    type="text" 
-                    name="name" 
-                    placeholder="Enter Post Title"
-                    value={state.title} 
-                    onChange={e => dispatch({type: CHANGE_TITLE, payload: e.target.value})}
-                />
-                {state.errors.title ? <div className="ui error message"> {state.errors.title} </div> : null }
-            </div>
-            <div className="field">
-                <label>Description</label>
-                <input 
-                    type="text" 
-                    name="description" 
-                    placeholder="Enter Post Description"
-                    value={state.description} 
-                    onChange={e => dispatch({type: CHANGE_DESCRIPTION, payload: e.target.value})}
-                />
-                {state.errors.description ? <div className="ui error message"> {state.errors.description} </div> : null }
-            </div>
-            <button className="ui primary button" type="submit">{button}</button>
-            <Link to='/' className="ui button">Back</Link>
-        </form>
+        <div>
+            <form className="ui form error success" onSubmit={onSubmit}>
+                {state.success ? <div className="ui success message"> {state.success} </div> : null }
+                {state.errors.api ? <div className="ui error message"> {state.errors.api} </div> : null }
+                <div className="field">
+                    <label>Title</label>
+                    <input 
+                        type="text" 
+                        name="name" 
+                        placeholder="Enter Post Title"
+                        value={state.title} 
+                        onChange={e => dispatch({type: CHANGE_TITLE, payload: e.target.value})}
+                    />
+                    {state.errors.title ? <div className="ui error message"> {state.errors.title} </div> : null }
+                </div>
+                <div className="field">
+                    <label>Description</label>
+                    <input 
+                        type="text" 
+                        name="description" 
+                        placeholder="Enter Post Description"
+                        value={state.description} 
+                        onChange={e => dispatch({type: CHANGE_DESCRIPTION, payload: e.target.value})}
+                    />
+                    {state.errors.description ? <div className="ui error message"> {state.errors.description} </div> : null }
+                </div>
+                {!state.success ?<button className="ui primary button" type="submit">{button}</button>: null}
+                <Link to='/' className="ui button">Back</Link>
+            </form>
+        </div>
         
     );
 }

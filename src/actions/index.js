@@ -4,8 +4,9 @@ import { checkForErrors } from '../helpers/handleResponse';
 
 import { 
     REGISTER, SIGN_IN, SIGN_OUT, 
-    FETCH_POSTS, FETCH_POST, CREATE_POST,
-    EDIT_POST, DELETE_POST, STATUS_FAILED, AUTHENTICATE
+    FETCH_POSTS, FETCH_POST,DELETE_POST, 
+    AUTHENTICATE,ADD_ACTION, 
+    EDIT_ACTION, DELETE_ACTION
 } from './types';
 
 
@@ -58,25 +59,39 @@ export const fetchPost = id => async dispatch => {
     dispatch({ type: FETCH_POST, payload: response.data.response.post });
 }
 
-export const createPost = (data, callback) => async dispatch => {
+export const createPost = (data, errorCallback, successCallback) => async dispatch => {
     const response = await blog().post('/post/add', data);
     const errors = checkForErrors(response);
     if (errors) {
         if (errors === 'Unauthenticated') {
             history.push('/auth/login');
         } else {
-            callback(errors);
+            errorCallback(errors);
         }
     } else {
-        dispatch({ type: CREATE_POST, payload: response.data.response.post });
-        history.push('/');
+        dispatch({ type: FETCH_POST, payload: response.data.response.post });
+        successCallback(response.data.response.message);
     }
 }
 
-export const editPost = (id, data, callback) => async dispatch => {
+export const editPost = (id, data, errorCallback, successCallback) => async dispatch => {
     const response = await blog().put(`/post/edit/${id}`, data);
     const errors = checkForErrors(response);
-    
+    if (errors) {
+        if (errors === 'Unauthenticated') {
+            history.push('/auth/login');
+        } else {
+            errorCallback(errors);
+        }
+    } else {
+        dispatch({ type: FETCH_POST, payload: response.data.response.post });
+        successCallback(response.data.response.message);
+    }
+}
+
+export const delePost = (id, callback) => async dispatch => {
+    const response = await blog().delete(`/post/delete/${id}`);
+    const errors = checkForErrors(response);
     if (errors) {
         if (errors === 'Unauthenticated') {
             history.push('/auth/login');
@@ -84,7 +99,49 @@ export const editPost = (id, data, callback) => async dispatch => {
             callback(errors);
         }
     } else {
-        dispatch({ type: EDIT_POST, payload: response.data });
+        dispatch({ type: FETCH_POST, payload: response.data.response.post });
+    }
+}
+
+export const rejectPostAction = (id, action, callback) => async dispatch => {
+    const response = await blog().post('/action', {id, action_type: 'reject' });
+    const errors = checkForErrors(response);
+    if (errors) {
+        if (errors === 'Unauthenticated') {
+            history.push('/auth/login');
+        } else {
+            callback(errors);
+        }
+    } else {
+        if (action === ADD_ACTION) {
+            dispatch({ type: DELETE_POST, payload: id });
+        } else if (action === DELETE_ACTION || action === EDIT_ACTION) {
+            dispatch({ type: FETCH_POST, payload: response.data.response.item });
+        } else {
+            callback('Ann Error has Occured please try again later');
+        }
+    }
+    
+}
+export const approvePostAction = (id, action, errorCallback, successCallback) => async dispatch => {
+    const response = await blog().post('/action', { id, action_type: 'approve'});
+    const errors = checkForErrors(response);
+    if (errors) {
+        if (errors === 'Unauthenticated') {
+            history.push('/auth/login');
+        } else {
+            errorCallback(errors);
+        }
+    } else {
+        if (action === DELETE_ACTION) {
+            dispatch({ type: DELETE_POST, payload: response.data.response.item.id });
+            successCallback(response.data.response.message);
+        } else if (action === ADD_ACTION || action === EDIT_ACTION) {
+            dispatch({ type: FETCH_POST, payload: response.data.response.item });
+            successCallback(response.data.response.message);
+        } else {
+            errorCallback('Ann Error has Occured please try again later');
+        }
     }
 }
 

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { fetchPosts } from '../../actions';
-import { checkForErrors } from '../../helpers/handleResponse';
-import blog from '../../apis/blog';
+import { fetchPosts, delePost } from '../../actions';
+
 
 class PostList extends Component {
 
@@ -23,39 +22,32 @@ class PostList extends Component {
 
    }
 
-   deletePost = async postId => {
-        const response = await blog().delete(`/post/delete/${postId}`);
-        const error = checkForErrors(response);
-        
-        if (error) {
+   deletePost =  postId => {
+        this.props.delePost(postId, error => {
             let errorToReturn = {};
             errorToReturn[postId] = error;
             this.setState({ errors: errorToReturn })
-        } else {
-            this.props.fetchPosts();
-        }
+        });
    }
-
-
 
    renderButton = post => {
        if(this.props.user) {
             if ((this.props.user.id === post.user_id || this.props.user.role_key === 'admin')) { 
-                    const { action } = post;
-                    if (action) {
-                        return (
-                            <div>
-                                <p>{action.transaction}</p>
-                            </div>
-                        );
-                    } 
+                const { action } = post;
+                if (action) {
                     return (
-                        <React.Fragment>
-                            <Link to={`/post/edit/${post.id}`} className="ui primary button">Edit</Link>
-                            <Link to="#" className="ui button" onClick={() => this.deletePost(post.id)} >Delete</Link>
-                        </React.Fragment>
+                        <div>
+                            <p>{action.transaction}</p>
+                            <Link to={`/post/${post.id}/action`} className="ui primary button">View More</Link>
+                        </div>
                     );
-                
+                } 
+                return (
+                    <React.Fragment>
+                        <Link to={`/post/edit/${post.id}`} className="ui primary button">Edit</Link>
+                        <Link to="#" className="ui button" onClick={() => this.deletePost(post.id)} >Delete</Link>
+                    </React.Fragment>
+                );
             }
         }
 
@@ -67,7 +59,11 @@ class PostList extends Component {
    }
 
     render() {
-        return this.props.posts.map(post => {
+        return this.props.posts.reverse().map(post => {
+            
+            if (post.deleted_at) {
+                return;
+            }
             return (
                 <div className="item" key={post.id}>
                     <div className="content">
@@ -93,4 +89,4 @@ const mapStateToProps = ({ posts, auth }) => {
     };
 }
 
-export default connect(mapStateToProps, { fetchPosts })(PostList);
+export default connect(mapStateToProps, { fetchPosts, delePost })(PostList);
