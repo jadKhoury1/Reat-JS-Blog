@@ -45,7 +45,11 @@ export const signOut = () => async dispatch => {
     await blog().post('/logout');
     localStorage.removeItem('auth_user');
     dispatch({ type: SIGN_OUT });
-    history.push('/', {refresh: true});
+    if (history.location.pathname === '/') {
+        history.push('/', {refresh: true});
+    } else {
+        history.push('/');
+    }
 } 
 
 

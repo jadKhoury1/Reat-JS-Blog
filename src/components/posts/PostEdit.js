@@ -26,7 +26,12 @@ class PostEdit extends Component {
                 <PostForm
                     button="Edit"
                     handleSubmit={this.onSubmit}
-                    initialValues={_.pick(this.props.post, 'title', 'description', 'image')}
+                    initialValues={
+                        {
+                            ..._.pick(this.props.post, 'title', 'description'),
+                            image: { relativePath: this.props.post.image, fullPath: this.props.post.image_path}
+                        }
+                    }
                 />
             </div>
         );

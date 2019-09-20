@@ -11,7 +11,8 @@ class PostList extends Component {
     }
 
     componentDidMount() {
-        this.props.fetchPosts();
+    
+       this.props.fetchPosts();
     }
 
     UNSAFE_componentWillReceiveProps({ history: {location: {state}} }) {
@@ -36,10 +37,10 @@ class PostList extends Component {
                 const { action } = post;
                 if (action) {
                     return (
-                        <div>
-                            <p className="ui green label">{action.transaction}</p>
+                        <React.Fragment>
+                            <p className="ui green label  mg-r-15">{action.transaction}</p>
                             <Link to={`/post/${post.id}/action`} className="ui primary button">View More</Link>
-                        </div>
+                        </React.Fragment>
                     );
                 } 
                 return (
@@ -58,23 +59,35 @@ class PostList extends Component {
         return <p>{this.state.errors[postId]}</p>
    }
 
-    render() {
+   renderPostList = () => {
         return this.props.posts.reverse().map(post => {
-            
             if (post.deleted_at) {
                 return;
             }
             return (
-                <div className="item" key={post.id}>
+                <div className="item mg-b-20 border-b-grey pd-b-20" key={post.id}>
+                    <div className="image">
+                        <img src={post.image_path} />
+                    </div>
                     <div className="content">
                         <h3 className="header">{post.title}</h3>
                         <div className="description">{post.description}</div>
+                        <div className="extra">
+                            {this.renderButton(post)}
+                            {this.renderError(post.id)}
+                        </div>
                     </div>
-                    {this.renderButton(post)}
-                    {this.renderError(post.id)}
                 </div>
             );
         });
+   }
+
+    render() {
+        return (
+            <div className="ui items">
+                {this.renderPostList()}
+            </div>
+        );
     }
 }
 

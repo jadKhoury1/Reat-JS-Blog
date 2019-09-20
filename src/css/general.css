@@ -6,10 +6,28 @@
     color: #db2828;
 }
 
-.mg-t-20 {
-    margin-top: 20px;
-}
 
 .mg-l-15 {
     margin-left: 15px !important;
+}
+
+.mg-r-15 {
+    margin-right: 15px !important;
+}
+
+
+.mg-t-20 {
+    margin-top: 20px !important;
+}
+
+.mg-b-20 {
+    margin-bottom: 20px !important;
+}
+
+.pd-b-20 {
+    padding-bottom: 20px !important;
+}
+
+.border-b-grey {
+    border-bottom: 1px solid grey !important;
 }

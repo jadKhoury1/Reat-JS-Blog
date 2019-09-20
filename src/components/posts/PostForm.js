@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import React, { useReducer } from 'react';
 import { Link } from 'react-router-dom';
+import blog from '../../apis/blog';
+import { checkForErrors } from '../../helpers/handleResponse';
 
 const CHANGE_TITLE = 'change_title';
 const CHANGE_DESCRIPTION = 'change_description';
@@ -15,7 +17,7 @@ const reducer = (state, { type, payload }) => {
     case CHANGE_DESCRIPTION:
         return {...state, description: payload};
     case CHANGE_IMAGE:
-        return {...state, image: payload};
+        return {...state, image: payload, errors: {}};
     case CHANGE_ERRORS:
         return {...state, errors: payload};
     case CHANGE_SUCCESS:
@@ -39,6 +41,22 @@ const PostForm = ({ button, handleSubmit, initialValues}) => {
         success: ''
     });
 
+    const uploadImage = async event => {
+        let uploadedImage = event.target.files[0];
+        let fd = new FormData();
+        fd.append('file', uploadedImage);
+
+        const response = await blog().post('/image/upload', fd);
+        const imageErrors = checkForErrors(response);
+
+        if (imageErrors) {
+            dispatch({ type: CHANGE_ERRORS, payload: { image: imageErrors }});
+        } else {
+            const { full_path, relative_path } = response.data.response;
+            dispatch({type: CHANGE_IMAGE, payload: { fullPath: full_path, relativePath: relative_path}});
+        }
+        
+    }
 
     const handleErrors = () => {
         let errors = {};
@@ -46,12 +64,17 @@ const PostForm = ({ button, handleSubmit, initialValues}) => {
         if (state.title && state.title.length < 6) {
             errors.title = 'Title must be at least 6 characters';
         }
-        if (!state.title) {
-            errors.title = 'Title is required';
-        }
+       
+       if (!state.title) {
+           errors.title = 'Title field is required';
+       }
 
-        if (!state.description) {
-            errors.description = 'Description is required';
+       if (!state.description) {
+           errors.description = 'Description Field is required';
+       }
+
+        if (!state.image.fullPath) {
+            errors.image = 'Image is required';
         }
 
         return errors;
@@ -63,15 +86,12 @@ const PostForm = ({ button, handleSubmit, initialValues}) => {
         if (Object.keys(errors).length !== 0) {
             dispatch({type: CHANGE_ERRORS, payload: errors});
         } else {
-            let dataToOmmit = ['errors'];
-            if (!state.image) {
-                dataToOmmit.push('image')
-            }
+            
             handleSubmit(
-                _.omit(state, dataToOmmit),
+                {..._.omit(state, ['errors']), image: state.image.relativePath},
                 error => dispatch({type: CHANGE_ERRORS, payload: {api: error}}),
                 success => {
-                    console.log('success was reached', success);
+
                     dispatch({type: CHANGE_SUCCESS, payload: success});
                 }
             );
@@ -96,17 +116,30 @@ const PostForm = ({ button, handleSubmit, initialValues}) => {
                 </div>
                 <div className="field">
                     <label>Description</label>
-                    <input 
+                    <textarea 
                         type="text" 
                         name="description" 
                         placeholder="Enter Post Description"
-                        value={state.description} 
+                        value={state.description}
                         onChange={e => dispatch({type: CHANGE_DESCRIPTION, payload: e.target.value})}
-                    />
+                    >
+                    </textarea>
                     {state.errors.description ? <div className="ui error message"> {state.errors.description} </div> : null }
                 </div>
-                {!state.success ?<button className="ui primary button" type="submit">{button}</button>: null}
-                <Link to='/' className="ui button">Back</Link>
+                <div className="field">
+                    <label>Image</label>
+                    <input
+                        type="file"
+                        name="image"
+                        onChange={e => uploadImage(e)}
+                    />
+                    {state.errors.image ? <div className="ui error message"> {state.errors.image} </div> : null }
+                </div>
+                <img src={state.image.fullPath} className="ui small image"/>
+                <div className="mg-t-20">
+                    {!state.success ?<button className="ui primary button" type="submit">{button}</button>: null}
+                    <Link to='/' className="ui button">Back</Link>
+                </div>
             </form>
         </div>
         

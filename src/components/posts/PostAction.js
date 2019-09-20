@@ -26,8 +26,9 @@ class PostAction extends Component {
                 </div>
                 <div className="field">
                     <label>Desciption</label>
-                    <input disabled type="text" value={post.description} />
+                    <textarea disabled value={post.description}> </textarea>
                 </div>
+                <img src={post.image_path} className="ui small image"/>
             </form>
         );
     }
@@ -36,13 +37,18 @@ class PostAction extends Component {
         const { post } = this.props;
         return (
             <div className="mg-t-20">
+           
                 {
-                    post.action === EDIT_ACTION ? 
-                    <div>
-                        <h3>Old Post</h3>
-                        {this.renderActionForm(post)}
-                        <h3>New Post</h3>
-                        {this.renderActionForm(JSON.parse(post.action.data))}
+                    post.action && post.action.action === EDIT_ACTION ? 
+                    <div className="ui grid">
+                        <div className="eight wide column">
+                            <h3>Old Post</h3>
+                            {this.renderActionForm(post)}
+                        </div>
+                        <div className="eight wide column">
+                            <h3>New Post</h3>
+                            {this.renderActionForm(JSON.parse(post.action.data))}
+                        </div>  
                     </div> : this.renderActionForm(post)
                 }   
             </div>
@@ -74,9 +80,9 @@ class PostAction extends Component {
 
         return (
             <div>
-                <p><span className="ui orange label">User Id:</span> <strong>{user.id} </strong></p>
-                <p><span className="ui yellow label">User Name: </span> <strong>{user.name}</strong></p>
-                <p><span className="ui olive label">User Email</span><strong>{user.email}</strong></p>
+                <span className="ui orange label">User Id:</span> <strong>{user.id} </strong>
+                <span className="ui yellow label mg-l-15">User Name: </span> <strong>{user.name}</strong>
+                <span className="ui olive label mg-l-15">User Email</span><strong>{user.email}</strong>
 
             </div>
         );
@@ -148,7 +154,7 @@ class PostAction extends Component {
                {this.state.error ? <h3 className="ui error message">{this.state.error}</h3> : ''}
                {this.renderActionHeader()}
                {this.renderForm()}
-               <div className="mg-t-20">
+               <div className="mg-t-20 mg-b-20">
                 {this.renderButtons()}
                 <Link to='/' className="ui button mg-l-15">Back</Link>
                </div>
