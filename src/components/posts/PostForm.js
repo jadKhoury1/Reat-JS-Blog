@@ -32,7 +32,7 @@ const PostForm = ({ button, handleSubmit, initialValues}) => {
         title: initialValues.title,
         description: initialValues.description,
         image: initialValues.image,
-        errors: initialValues.errors
+        errors: {}
     });
 
 

@@ -1,5 +1,6 @@
 import blog from '../apis/blog';
 import history from '../history';
+import { checkForErrors } from '../helpers/handleResponse';
 
 import { 
     REGISTER, SIGN_IN, SIGN_OUT, 
@@ -54,7 +55,7 @@ export const fetchPosts = () => async dispatch => {
 
 export const fetchPost = id => async dispatch => {
     const response = await blog().get(`/post/get/${id}`);
-    dispatch({ type: FETCH_POST, payload: response.data });
+    dispatch({ type: FETCH_POST, payload: response.data.response.post });
 }
 
 export const createPost = (data, callback) => async dispatch => {
@@ -72,29 +73,19 @@ export const createPost = (data, callback) => async dispatch => {
     }
 }
 
-export const editPost = (id, data) => async dispatch => {
+export const editPost = (id, data, callback) => async dispatch => {
     const response = await blog().put(`/post/edit/${id}`, data);
-    dispatch({ type: EDIT_POST, payload: response.data });
-}
-
-export const deletePost = id => async dispatch => {
-    const response = await blog().delete(`/post/delete/${id}`);
-    dispatch({ type: DELETE_POST, payload: response.data });
-}
-
-const checkForErrors = response => {
-    const { status } = response.data;
-
-    if (!status) {
-        const { message } = response.data;
-        return message ? message : 'Request Could not be made. Please try again later';
+    const errors = checkForErrors(response);
+    
+    if (errors) {
+        if (errors === 'Unauthenticated') {
+            history.push('/auth/login');
+        } else {
+            callback(errors);
+        }
+    } else {
+        dispatch({ type: EDIT_POST, payload: response.data });
     }
-
-    if (status === STATUS_FAILED) {
-        const { message } = response.data.response;
-        return message ? message : 'Request Could not be made. Please try again later'
-    }
-
-    return;
 }
+
 
