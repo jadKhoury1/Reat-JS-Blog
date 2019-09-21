@@ -5,7 +5,6 @@ import PostForm from './PostForm';
 
 class PostCreate extends Component {
     onSubmit = (formValues, errorCallback, successCallback) => {
-        console.log('this was reached');
         this.props.createPost(formValues, errorCallback, successCallback);
     }
 
