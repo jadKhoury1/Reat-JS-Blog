@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 export default () => {
-    console.log('api: ', process.env.REACT_APP_BASE_URL);
      // grab auth user from local storage
     const authUser = localStorage.getItem('auth_user');
     
