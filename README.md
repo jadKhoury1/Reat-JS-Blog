@@ -1,12 +1,8 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
-
-In the project directory, you can run:
-
 ## React JS Blog Project
 
-This project was created wit the react JS and Redux libraries
+This project was created wit the React JS and Redux libraries
 
 <h4>First Step </h4>
  
@@ -18,7 +14,7 @@ This project was created wit the react JS and Redux libraries
  
  <h4>Third Step</h4>
  
-  - In case your base url is not http://localhost/blog/public/api <br />
+  - In case your base back-end api url is not http://localhost/blog/public/api <br />
   - Create .env file in the root directory and add REACT_APP_BASE_URL=YOUR_URL
   
   <h4>Extensions</h4>
