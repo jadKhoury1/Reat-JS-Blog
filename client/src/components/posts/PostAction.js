@@ -155,8 +155,8 @@ class PostAction extends Component {
                {this.renderActionHeader()}
                {this.renderForm()}
                <div className="mg-t-20 mg-b-20">
-                {this.renderButtons()}
-                <Link to='/' className="ui button mg-l-15">Back</Link>
+                    {this.renderButtons()}
+                    <Link to='/' className="ui button mg-l-15">Back</Link>
                </div>
             </div>
         );
