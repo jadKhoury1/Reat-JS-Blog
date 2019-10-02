@@ -2,13 +2,18 @@ import '../css/general.css';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { signOut } from '../actions';
+import { signOut, setInitialPosts } from '../actions';
 
 class Header extends Component {
 
     state = {
         apiCall: false
     }
+
+    componentDidMount() {
+        this.props.setInitialPosts();
+    }
+
 
     renderButtons = () => {
         if (this.props.isSignedIn) {
@@ -68,4 +73,4 @@ const mapStateToProps = ({ auth }) => {
     }
 };
 
-export default connect(mapStateToProps, { signOut })(Header);
+export default connect(mapStateToProps, { signOut, setInitialPosts })(Header);

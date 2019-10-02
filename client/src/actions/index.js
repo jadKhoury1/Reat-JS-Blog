@@ -6,7 +6,7 @@ import {
     REGISTER, SIGN_IN, SIGN_OUT, 
     FETCH_POSTS, FETCH_POST,DELETE_POST, 
     AUTHENTICATE,ADD_ACTION, 
-    EDIT_ACTION, DELETE_ACTION
+    EDIT_ACTION, DELETE_ACTION, SET_INITIAL_POSTS
 } from './types';
 
 
@@ -49,10 +49,17 @@ export const signOut = callback => async dispatch => {
     history.push('/');  
 } 
 
+export const setInitialPosts = () => {
+    return {
+        type: SET_INITIAL_POSTS,
+        payload: JSON.parse(localStorage.getItem('posts'))
+    };
+}
 
-export const fetchPosts = () => async dispatch => {
+export const fetchPosts = callback => async dispatch => {
     const response = await blog().get('/posts/get');
     dispatch({ type: FETCH_POSTS, payload: response.data.response.posts });
+    callback();
 };
 
 export const fetchPost = id => async dispatch => {

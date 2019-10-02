@@ -12,7 +12,8 @@ class PostList extends Component {
     }
 
     componentDidMount() {
-       this.props.fetchPosts();
+       this.setState({ apiCalls: {initial: true }});
+       this.props.fetchPosts(() => this.setState({ apiCalls: { initial: false }}));
     }
 
 
@@ -60,6 +61,25 @@ class PostList extends Component {
    }
 
    renderPostList = () => {
+        if (this.props.posts.length === 0) {
+            if (this.state.apiCalls.initial) {
+                return (
+                    <div className="ui active inverted dimmer">
+                        <div className="ui text loader">
+                            Fetching Posts...
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="ui error">
+                    <div className="ui error message"> No Posts found </div>
+                </div>
+            )
+        }
+
+
         return this.props.posts.map(post => {
             if (post.deleted_at) {
                 return null;

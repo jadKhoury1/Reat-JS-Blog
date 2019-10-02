@@ -5,6 +5,7 @@ export const SIGN_OUT = 'SIGN_OUT';
 export const FETCH_POSTS = 'FETCH_POSTS';
 export const FETCH_POST = 'FETCH_POST';
 export const DELETE_POST = 'DELETE_POST';
+export const SET_INITIAL_POSTS = 'SET_INITIAL_POSTS';
 
 export const STATUS_FAILED  = 'FAILED';
 export const STATUS_SUCCESS = 'OK';
