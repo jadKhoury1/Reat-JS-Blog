@@ -135,7 +135,7 @@ const PostForm = ({ button, handleSubmit, initialValues}) => {
                     />
                     {state.errors.image ? <div className="ui error message"> {state.errors.image} </div> : null }
                 </div>
-                <img src={state.image.fullPath} className="ui small image"/>
+                <img src={state.image.fullPath} alt="Blog" className="ui small image"/>
                 <div className="mg-t-20">
                     {!state.success ?<button className="ui primary button" type="submit">{button}</button>: null}
                     <Link to='/' className="ui button">Back</Link>

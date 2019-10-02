@@ -11,17 +11,9 @@ class PostList extends Component {
     }
 
     componentDidMount() {
-    
        this.props.fetchPosts();
     }
 
-    UNSAFE_componentWillReceiveProps({ history: {location: {state}} }) {
-        if (state && state.refresh) {
-            state.refresh = false;
-            this.props.fetchPosts();
-        }
-
-   }
 
    deletePost =  postId => {
         this.props.delePost(postId, error => {
@@ -60,14 +52,14 @@ class PostList extends Component {
    }
 
    renderPostList = () => {
-        return this.props.posts.reverse().map(post => {
+        return this.props.posts.map(post => {
             if (post.deleted_at) {
-                return;
+                return null;
             }
             return (
                 <div className="item mg-b-20 border-b-grey pd-b-20" key={post.id}>
                     <div className="image">
-                        <img src={post.image_path} />
+                        <img src={post.image_path} alt="Blog"/>
                     </div>
                     <div className="content">
                         <h3 className="header">{post.title}</h3>

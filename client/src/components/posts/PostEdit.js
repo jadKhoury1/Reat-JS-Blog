@@ -39,7 +39,7 @@ class PostEdit extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    return { post: state.posts[parseInt(ownProps.match.params.id)]}
+    return { post: state.posts.find(({id}) => id === parseInt(ownProps.match.params.id))}
 };
 
 export default connect(mapStateToProps, { fetchPost, editPost })(PostEdit);

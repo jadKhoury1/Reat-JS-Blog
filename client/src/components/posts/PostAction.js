@@ -28,7 +28,7 @@ class PostAction extends Component {
                     <label>Desciption</label>
                     <textarea disabled value={post.description}> </textarea>
                 </div>
-                <img src={post.image_path} className="ui small image"/>
+                <img src={post.image_path} alt="blog" className="ui small image"/>
             </form>
         );
     }
@@ -166,7 +166,7 @@ class PostAction extends Component {
 const mapStateToProps = ({ posts, auth}, ownProps)  => {
     return {
         user: auth.user,
-        post: posts[parseInt(ownProps.match.params.id)]   
+        post: posts.find(({id}) => id === parseInt(ownProps.match.params.id))
     };
 };
 
