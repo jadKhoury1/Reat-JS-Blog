@@ -140,7 +140,7 @@ class PostAction extends Component {
                 >
                     Reject
                 </button>
-                <Link to='/' className="ui button mg-l-15">Back</Link>;
+                <Link to='/' className="ui button mg-l-15">Back</Link>
             </React.Fragment>
         )
 
