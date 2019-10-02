@@ -13,6 +13,7 @@ class Register extends Component {
             email: '',
             password: '',
             passwordConfirmation: '',
+            apiCall: false,
             errors: {}
         };
         this.handleErrors = this.handleErrors.bind(this);
@@ -28,20 +29,21 @@ class Register extends Component {
     handleSubmit = (event) => {
         event.preventDefault();
         const errors = this.handleErrors();
-
+        const inputs = _.omit(
+            {...this.state, password_confirmation: this.state.passwordConfirmation},
+            ['errors', 'passwordConfirmation', 'apiCall']
+        );
         if (Object.keys(errors).length !== 0) {
             this.setState({ errors });
         } else {
+            this.setState({apiCall: true});
             this.props.registerAcion(
-                _.omit(
-                    {...this.state, password_confirmation: this.state.passwordConfirmation},
-                     ['errors', 'passwordConfirmation']
-                ), error => this.setState({ errors: {api: error}})
+               inputs, error => this.setState({ errors: {api: error}, apiCall: false})
             );
         }
     }
 
-    handleErrors() {
+    handleErrors(inputs) {
         let errors = {};
 
         if (this.state.name.length < 6) {
@@ -68,7 +70,7 @@ class Register extends Component {
             errors.passwordConfirmation = 'Password does not match';
         }
 
-        for (var input in this.state) {
+        for (var input in inputs) {
             if (!this.state[input]) {
                 errors[input] = `${input} field is required`;
             }
@@ -77,6 +79,18 @@ class Register extends Component {
         return errors;
     }
 
+    renderButtons() {
+        if (this.state.apiCall) {
+            return <button className="ui primary loading button">Loading</button>;
+        }
+
+        return (
+            <React.Fragment>
+                <button className="ui primary button" type="submit">Register</button>
+                <Link to='/' className="ui button">Back</Link>
+            </React.Fragment>
+        );
+    }
     renderForm = () => {
         if (this.props.isSignedIn) {
             return <Redirect to="/" />
@@ -132,8 +146,7 @@ class Register extends Component {
                     />
                     {errors.passwordConfirmation ? <div className="ui error message"> {errors.passwordConfirmation} </div> : null }
                 </div>
-                <button className="ui primary button" type="submit">Register</button>
-                <Link to='/' className="ui button">Back</Link>
+                {this.renderButtons()}
             </form>
         );
     }

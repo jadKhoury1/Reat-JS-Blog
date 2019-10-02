@@ -41,15 +41,12 @@ export const signIn = (data, callback) => async dispatch => {
     }
 }
 
-export const signOut = () => async dispatch => {
+export const signOut = callback => async dispatch => {
     await blog().post('/logout');
     localStorage.removeItem('auth_user');
     dispatch({ type: SIGN_OUT });
-    if (history.location.pathname === '/') {
-        history.push('/', {refresh: true});
-    } else {
-        history.push('/');
-    }
+    callback();
+    history.push('/');  
 } 
 
 

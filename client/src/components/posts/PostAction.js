@@ -10,7 +10,8 @@ class PostAction extends Component {
     
     state = {
         error: '',
-        success: ''
+        success: '',
+        apiCall: {approve: false, reject: false}
     };
 
     componentDidMount() {
@@ -88,43 +89,62 @@ class PostAction extends Component {
         );
     }
 
+    approveAction = post => {
+        this.setState({apiCall: { approve: true }});
+        this.props.approvePostAction(
+            post.action.id,
+            post.action.action,
+            error => this.setState({ error }),
+            success => this.setState({ success, error: '' })
+        );
+    }
+
+    rejectAction = post => {
+        this.setState({apiCall: { reject: true }});
+        this.props.rejectPostAction(
+            post.action.id,
+            post.action.action,
+            error => this.setState({ error, apiCall: { approve: false, reject: false }}),
+            success => this.setState({ success, apiCall: { approve: false, reject: false }})
+        );
+    }
+    
+
     renderButtons = () => {
         const { post, user } = this.props;
 
         if (!post.action || !user || user.role_key !== 'admin') {
-            return null;
+            return <Link to='/' className="ui button mg-l-15">Back</Link>;
+        }
+
+        if (this.state.apiCall.approve) {
+            return <button className="ui primary loading button">Loading</button>;
+        }
+
+        if (this.state.apiCall.reject) {
+            return <button className="ui red loading button">Loading</button>;
         }
 
         return (
            <React.Fragment>
                 <button 
                     className="ui primary button"
-                    onClick={() => this.props.approvePostAction(
-                        post.action.id,
-                        post.action.action,
-                        error => this.setState({ error }),
-                        success => this.setState({ success, error: '' })
-                    )}
+                    onClick={() => this.approveAction(post)}
                 >
                     Approve
                 </button>
 
                 <button 
                     className="ui red button mg-l-15"
-                    onClick={() => this.props.rejectPostAction(
-                        post.action.id,
-                        post.action.action,
-                        error => this.setState({ error }),
-                        success => this.setState({ success })
-                    )}
+                    onClick={() => this.rejectAction(post)}
                 >
                     Reject
                 </button>
+                <Link to='/' className="ui button mg-l-15">Back</Link>;
             </React.Fragment>
-        
         )
 
-    };
+    }
 
 
     render() {
@@ -156,7 +176,6 @@ class PostAction extends Component {
                {this.renderForm()}
                <div className="mg-t-20 mg-b-20">
                     {this.renderButtons()}
-                    <Link to='/' className="ui button mg-l-15">Back</Link>
                </div>
             </div>
         );

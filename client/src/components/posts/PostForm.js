@@ -9,6 +9,7 @@ const CHANGE_DESCRIPTION = 'change_description';
 const CHANGE_IMAGE = 'change_image';
 const CHANGE_ERRORS = 'change_errors';
 const CHANGE_SUCCESS = 'change_success';
+const CALL_API = 'call_api';
 
 const reducer = (state, { type, payload }) => {
   switch (type) {
@@ -17,11 +18,13 @@ const reducer = (state, { type, payload }) => {
     case CHANGE_DESCRIPTION:
         return {...state, description: payload};
     case CHANGE_IMAGE:
-        return {...state, image: payload, errors: {}};
+        return {...state, image: payload, errors: {}, apiCall: false};
     case CHANGE_ERRORS:
-        return {...state, errors: payload};
+        return {...state, errors: payload, apiCall: false};
     case CHANGE_SUCCESS:
-        return {...state, success: payload, errors: {}}
+        return {...state, success: payload, errors: {}, apiCall: false};
+    case CALL_API:
+        return {...state, apiCall: payload}
     default:
         return state;
   }
@@ -38,7 +41,8 @@ const PostForm = ({ button, handleSubmit, initialValues}) => {
         description: initialValues.description,
         image: initialValues.image,
         errors: {},
-        success: ''
+        success: '',
+        apiCall: false
     });
 
     const uploadImage = async event => {
@@ -46,6 +50,7 @@ const PostForm = ({ button, handleSubmit, initialValues}) => {
         let fd = new FormData();
         fd.append('file', uploadedImage);
 
+        dispatch({type: CALL_API, payload: true})
         const response = await blog().post('/image/upload', fd);
         const imageErrors = checkForErrors(response);
 
@@ -86,16 +91,27 @@ const PostForm = ({ button, handleSubmit, initialValues}) => {
         if (Object.keys(errors).length !== 0) {
             dispatch({type: CHANGE_ERRORS, payload: errors});
         } else {
-            
+            dispatch({type: CALL_API, payload: true})
             handleSubmit(
-                {..._.omit(state, ['errors']), image: state.image.relativePath},
+                {..._.omit(state, ['errors', 'success', 'apiCall']), image: state.image.relativePath},
                 error => dispatch({type: CHANGE_ERRORS, payload: {api: error}}),
                 success => {
-
                     dispatch({type: CHANGE_SUCCESS, payload: success});
                 }
             );
         }
+    }
+
+    const renderButtons = () => {
+        if (state.apiCall) {
+            return <button className="ui primary loading button">Loading</button>;
+        }
+        return(
+            <React.Fragment>
+                {!state.success ?<button className="ui primary button" type="submit">{button}</button>: null}
+                <Link to='/' className="ui button">Back</Link>
+            </React.Fragment>  
+        );
     }
 
     return (
@@ -135,10 +151,9 @@ const PostForm = ({ button, handleSubmit, initialValues}) => {
                     />
                     {state.errors.image ? <div className="ui error message"> {state.errors.image} </div> : null }
                 </div>
-                <img src={state.image.fullPath} alt="Blog" className="ui small image"/>
+                {state.image.fullPath ? <img src={state.image.fullPath} alt="Blog" className="ui small image"/> : null}
                 <div className="mg-t-20">
-                    {!state.success ?<button className="ui primary button" type="submit">{button}</button>: null}
-                    <Link to='/' className="ui button">Back</Link>
+                    {renderButtons()}
                 </div>
             </form>
         </div>

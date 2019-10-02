@@ -7,7 +7,8 @@ import { fetchPosts, delePost } from '../../actions';
 class PostList extends Component {
 
     state = {
-        errors: {}
+        errors: {},
+        apiCalls: {}
     }
 
     componentDidMount() {
@@ -16,10 +17,14 @@ class PostList extends Component {
 
 
    deletePost =  postId => {
+        let apiCalls = {};
+        apiCalls[postId] = true;
+        this.setState({ apiCalls });
         this.props.delePost(postId, error => {
             let errorToReturn = {};
             errorToReturn[postId] = error;
-            this.setState({ errors: errorToReturn })
+            apiCalls[postId] = false;
+            this.setState({ errors: errorToReturn, apiCalls })
         });
    }
 
@@ -27,6 +32,9 @@ class PostList extends Component {
        if(this.props.user) {
             if ((this.props.user.id === post.user_id || this.props.user.role_key === 'admin')) { 
                 const { action } = post;
+                if (this.state.apiCalls[post.id] && !action) {
+                    return <button className="ui primary loading button">Loading</button>;
+                }
                 if (action) {
                     return (
                         <React.Fragment>

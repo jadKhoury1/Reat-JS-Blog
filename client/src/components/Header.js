@@ -6,12 +6,21 @@ import { signOut } from '../actions';
 
 class Header extends Component {
 
+    state = {
+        apiCall: false
+    }
+
     renderButtons = () => {
         if (this.props.isSignedIn) {
             return (
                 <React.Fragment>
                     <Link to="/post/new" className="item">Add Post</Link>
-                    <Link to="#" className="item" onClick={() => this.props.signOut() }>Logout</Link>
+                    <Link to="#" className="item" onClick={() => {
+                        this.setState({apiCall: true});
+                        this.props.signOut(() => this.setState({apiCall: false})) 
+                    }}>
+                        Logout
+                    </Link>
                 </React.Fragment>
             )
         }
@@ -25,6 +34,20 @@ class Header extends Component {
         
     };
 
+    renderLoader = () => {
+        if (this.state.apiCall) {
+            return (
+                <div className="ui active inverted dimmer">
+                    <div className="ui text loader">
+                        Logging you out
+                    </div>
+                </div>
+            );
+        }
+
+        return null;
+    }
+
     render() {
         return (
             <div className="ui secondary pointing menu">
@@ -32,6 +55,7 @@ class Header extends Component {
                 <div className="right menu">
                     {this.renderButtons()}
                 </div>
+                {this.renderLoader()}
             </div>
         );
     }

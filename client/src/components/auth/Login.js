@@ -20,23 +20,22 @@ class Login extends Component {
 
     handleSubmit = event => {
         event.preventDefault();
-        const errors = this.handleErrors();
-
+        const inputs = _.omit({...this.state}, ['errors', 'apiCall']);
+        const errors = this.handleErrors(inputs);
         if (Object.keys(errors).length !== 0) {
             this.setState({ errors });
         } else {
+            this.setState({apiCall: true});
             this.props.signIn(
-                _.omit(
-                    {...this.state}, ['errors']
-                ), error => this.setState({ errors: {api: error}})
+               inputs, error => this.setState({ errors: {api: error}, apiCall: false})
             );
         }
     };
 
-    handleErrors() {
+    handleErrors(inputs) {
         let errors = {};
 
-        for (var input in this.state) {
+        for (var input in inputs) {
             if (!this.state[input]) {
                 errors[input] = `${input} field is required`;
             }
@@ -49,6 +48,18 @@ class Login extends Component {
         this.setState({
             [name]: value
         });
+    }
+
+    renderButtons = () => {
+        if (this.state.apiCall) {
+            return <button className="ui primary loading button">Loading</button>;
+        }
+        return (
+            <React.Fragment>
+                <button className="ui primary button" type="login">Login</button>
+                <Link to='/' className="ui button">Back</Link>
+            </React.Fragment>
+        );
     }
 
     renderForm = () => {
@@ -83,8 +94,7 @@ class Login extends Component {
                     />
                     {errors.password ? <div className="ui error message"> {errors.password} </div> : null }
                 </div>
-                <button className="ui primary button" type="login">Login</button>
-                <Link to='/' className="ui button">Back</Link>
+                {this.renderButtons()}
             </form>
         );
     }
