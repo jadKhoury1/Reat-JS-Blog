@@ -8,7 +8,7 @@ export default () => {
     const token = authUser ? JSON.parse(authUser).token : '';
     
     return axios.create({
-        baseURL: process.env.REACT_APP_BASE_URL || 'http://localhost/blog/public/api',
+        baseURL: process.env.REACT_APP_BASE_API_URL || 'http://localhost/blog/public/api',
         headers: {
             Accept: 'application/json',
             Authorization: `Bearer ${token}`
